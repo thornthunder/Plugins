@@ -1,0 +1,65 @@
+/**
+ * This data rendering helper method can be useful for cases where are displaying
+ * files in a table, and need to display sizes more ergonomical
+ *
+ * It accepts three parameters:
+ *
+ * 1. `typeIndexNumber` - The index number in your row variable that contains the
+ * the string defining file type, such as 'dir' or 'file'
+ * 2. `valueIndexNumber` - The index number in your row variable that contains
+ * the actual value of teh file size
+ * 3. `filterWord` - the word to filter agains, which is the word that would be showed
+ * an in the example below it is where the word 'file' is passed on, the function would
+ * render
+ *
+ *  @name filesizesRender
+ *  @summary displays file sizes better
+ *  @author [thornthunder](jean@thirions.com)
+ *  @requires DataTables 1.10+
+ *
+ * @returns {string} Text with File size display
+ *
+ *  @example
+ *    $(document).ready(function() {
+ *		    $("#FILES").DataTable( {
+ *		        "processing": true,
+ *		        "serverSide": true,
+ *		        ajax: "../api/fileviewer.api.php?directory=".$_GET['directory'].",
+ *				columnDefs: [{
+ *				    targets: 0,
+ *				    render: function (data, type, row, meta)
+ *				    {
+ *				        if (type === "display")
+ *				        {
+ *				            data = "<div class='linked' onclick='goto("+'"'+row[1]+'"'+","+'"'+data+'"'+")'>"+data+"</div>";
+ *				        }
+ *						return data;
+ *				    }
+ *				},{
+ *				    targets: 4,
+ *		        	data: null,	
+ *				    render: $.fn.dataTable.render.filesize(1,4,'file')
+ *				},
+ **/
+ 
+ $.fn.dataTable.render.filesize = function (typeIndexNumber,valueIndexNumber,filterWord) {
+		    return function ( data, type, row ) {
+		        		var returnData = '';;
+		        		var FileSize = row[valueIndexNumber];
+		        		var FileType = row[typeIndexNumber];
+		        		if(FileType == filterWord){
+							if(FileSize < 999){
+		        				returnData = FileSize +' B';
+		        			} else if(FileSize < 999999){ 
+		        				FileSize = ( ( FileSize ) / 1024 );
+		        				returnData = FileSize.toPrecision(3) +' kB';
+		        			} else {
+		        				FileSize = ( ( FileSize ) / 1048594 );
+		        				returnData = FileSize.toPrecision(3) +' MB';
+		        			}
+		        			
+		        		}
+		        		return returnData;
+			}
+		}; 
+ 
